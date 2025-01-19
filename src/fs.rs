@@ -12,7 +12,9 @@ pub struct Filesystem {
 impl Filesystem {
     pub fn setup(filename: &str) -> Filesystem {
         let current: PathBuf = filename.into();
-        let directory = current.as_path().parent().unwrap().to_path_buf();
+        println!("File to load: {}", current.display());
+        let directory = current.as_path().canonicalize().unwrap().parent().unwrap().to_path_buf();
+        println!("Working directory: {}", directory.display());
         Filesystem { current, directory }
     }
 
@@ -25,6 +27,7 @@ impl Filesystem {
     }
 
     pub fn data(&self) -> image::Image {
+        println!("Load file: {}", self.current.display());
         format::load_image(&self.current)
     }
 }
