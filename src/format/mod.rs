@@ -34,8 +34,8 @@ impl From<&Image> for TextureParams {
             // TODO
             format: miniquad::TextureFormat::RGB8,
             wrap: miniquad::TextureWrap::Clamp,
-            min_filter: miniquad::FilterMode::Linear,
-            mag_filter: miniquad::FilterMode::Linear,
+            min_filter: miniquad::FilterMode::Nearest,
+            mag_filter: miniquad::FilterMode::Nearest,
             mipmap_filter: miniquad::MipmapFilterMode::None,
             width: image.width,
             height: image.height,
