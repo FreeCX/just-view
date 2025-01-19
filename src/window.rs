@@ -80,14 +80,18 @@ impl Window {
 }
 
 impl EventHandler for Window {
-    fn update(&mut self) {}
+    fn update(&mut self) {
+        // TODO: тут надо в кэш подгрузить пару картинок
+    }
 
     fn draw(&mut self) {
         let (w, h) = window::screen_size();
 
-        let img_aspect = (w / self.image.width as f32).min(h / self.image.height as f32);
-        let ix = (self.image.width as f32 * img_aspect) / w;
-        let iy = (self.image.height as f32 * img_aspect) / h;
+        // TODO: для картинок меньше размера окна нужно оставлять без масштабирования
+        // вписывание изображение в окно текущего размера
+        let aspect = (w / self.image.width as f32).min(h / self.image.height as f32);
+        let ix = self.config.zoom * (self.image.width as f32 * aspect) / w;
+        let iy = self.config.zoom * (self.image.height as f32 * aspect) / h;
 
         self.ctx.begin_default_pass(Default::default());
 
@@ -104,13 +108,26 @@ impl EventHandler for Window {
         match keycode {
             KeyCode::Escape => window::quit(),
             KeyCode::Delete => println!("todo: Delete"),
-            KeyCode::Equal => println!("todo: +"),
-            KeyCode::Minus => println!("todo: -"),
+            KeyCode::Equal => {
+                if self.config.zoom < 4096.0 {
+                    self.config.zoom *= 2.0;
+                }
+                println!("Zoom in to {}", self.config.zoom);
+            }
+            KeyCode::Minus => {
+                if self.config.zoom > 1.0 / 1024.0 {
+                    self.config.zoom *= 0.5;
+                }
+                println!("Zoom out to {}", self.config.zoom);
+            }
             KeyCode::Left => println!("todo: ←"),
             KeyCode::Right => println!("todo: →"),
             KeyCode::F => self.trigger_fullscreen(),
             KeyCode::I => println!("todo: i"),
-            KeyCode::R => println!("todo: r"),
+            KeyCode::R => {
+                self.config.zoom = 1.0;
+                println!("Zoom to default {}", self.config.zoom);
+            }
             _ => (),
         };
     }
