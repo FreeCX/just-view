@@ -1,0 +1,15 @@
+[package]
+name = "jv"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+mime_guess = "2.0.5"
+miniquad = "0.4.7"
+png = {version = "0.17.16", optional = true}
+zune-jpeg = {version = "0.4.14", optional = true}
+
+[features]
+default = ["png", "jpg"]
+png = ["dep:png"]
+jpg = ["dep:zune-jpeg"]
