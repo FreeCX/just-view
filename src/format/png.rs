@@ -9,12 +9,12 @@ impl Loader for Png {
     fn load(data: &[u8]) -> Image {
         let decoder = Decoder::new(data);
         let mut reader = decoder.read_info().unwrap();
-        let mut buf = vec![0; reader.output_buffer_size()];
-        let info = reader.next_frame(&mut buf).unwrap();
+        let mut pixels = vec![0; reader.output_buffer_size()];
+        let info = reader.next_frame(&mut pixels).unwrap();
         // buf.shrink_to(info.buffer_size());
 
         Image {
-            data: buf,
+            data: pixels,
             width: info.width,
             height: info.height,
             // TODO: normal cast
