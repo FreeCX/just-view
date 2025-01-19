@@ -16,7 +16,7 @@ fn main() {
     let filename: Option<String> = std::env::args().skip(1).take(1).next();
 
     let fs = match filename {
-        Some(file) => Filesystem::load(&file),
+        Some(file) => Filesystem::setup(&file),
         None => Filesystem::default(),
     };
 

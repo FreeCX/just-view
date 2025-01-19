@@ -1,5 +1,3 @@
-use std::fs;
-
 use miniquad::{
     window, Bindings, BufferLayout, BufferSource, BufferType, BufferUsage, EventHandler, GlContext, KeyCode, Pipeline,
     PipelineParams, RenderingBackend, ShaderSource, TextureParams, UniformsSource, VertexAttribute, VertexFormat,
@@ -9,7 +7,7 @@ use crate::shader;
 use crate::vertex::{Vec2, Vertex};
 use crate::{
     config::{Config, Size},
-    format,
+    image::Image,
 };
 
 pub struct Window {
@@ -17,8 +15,7 @@ pub struct Window {
     pipeline: Pipeline,
     bindings: Bindings,
 
-    img: Size,
-
+    image: Image,
     config: Config,
 }
 
@@ -41,25 +38,9 @@ impl Window {
         let index_buffer =
             ctx.new_buffer(BufferType::IndexBuffer, BufferUsage::Immutable, BufferSource::slice(&indices));
 
-        // TODO
-        let file = "demo.png";
-        let mime_type = mime_guess::MimeGuess::from_path(file).first().unwrap();
-        let data = fs::read(file).unwrap();
-        let img = format::load_by_mime(&mime_type.subtype(), &data);
-        let params = TextureParams {
-            kind: miniquad::TextureKind::Texture2D,
-            format: miniquad::TextureFormat::RGB8,
-            wrap: miniquad::TextureWrap::Clamp,
-            min_filter: miniquad::FilterMode::Linear,
-            mag_filter: miniquad::FilterMode::Linear,
-            mipmap_filter: miniquad::MipmapFilterMode::None,
-            width: img.width,
-            height: img.height,
-            allocate_mipmaps: false,
-            sample_count: 0,
-        };
-        let img_info = Size { w: img.width, h: img.height };
-        let texture = ctx.new_texture_from_data_and_format(&img.data, params);
+        let image = config.filesystem.data();
+        let params = TextureParams::from(&image);
+        let texture = ctx.new_texture_from_data_and_format(&image.data, params);
 
         let bindings = Bindings { vertex_buffers: vec![vertex_buffer], index_buffer, images: vec![texture] };
 
@@ -77,7 +58,7 @@ impl Window {
             PipelineParams::default(),
         );
 
-        Window { ctx, pipeline, bindings, img: img_info, config }
+        Window { ctx, pipeline, bindings, image, config }
     }
 
     fn trigger_fullscreen(&mut self) {
@@ -104,9 +85,9 @@ impl EventHandler for Window {
     fn draw(&mut self) {
         let (w, h) = window::screen_size();
 
-        let img_aspect = (w / self.img.w as f32).min(h / self.img.h as f32);
-        let ix = (self.img.w as f32 * img_aspect) / w;
-        let iy = (self.img.h as f32 * img_aspect) / h;
+        let img_aspect = (w / self.image.width as f32).min(h / self.image.height as f32);
+        let ix = (self.image.width as f32 * img_aspect) / w;
+        let iy = (self.image.height as f32 * img_aspect) / h;
 
         self.ctx.begin_default_pass(Default::default());
 

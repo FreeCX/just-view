@@ -1,4 +1,4 @@
-use crate::fs::{self, Filesystem};
+use crate::fs::Filesystem;
 
 #[derive(Default)]
 pub struct Size {
@@ -19,7 +19,7 @@ pub struct Config {
     pub fullscreen: bool,
     pub last_size: Size,
     pub background: Color,
-    pub filesystem: fs::Filesystem,
+    pub filesystem: Filesystem,
 }
 
 impl Color {
@@ -29,7 +29,7 @@ impl Color {
 }
 
 impl Config {
-    pub fn new(fullscreen: bool, background: Color, fs: Filesystem) -> Config {
-        Config { fullscreen, background, filesystem: fs, ..Default::default() }
+    pub fn new(fullscreen: bool, background: Color, filesystem: Filesystem) -> Config {
+        Config { fullscreen, background, filesystem, ..Default::default() }
     }
 }

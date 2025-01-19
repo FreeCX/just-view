@@ -1,11 +1,19 @@
+use std::path::PathBuf;
+
+use crate::format;
 use crate::image;
 
 #[derive(Default)]
-pub struct Filesystem;
+pub struct Filesystem {
+    current: PathBuf,
+    directory: PathBuf,
+}
 
 impl Filesystem {
-    pub fn load(_filename: &str) -> Filesystem {
-        todo!();
+    pub fn setup(filename: &str) -> Filesystem {
+        let current: PathBuf = filename.into();
+        let directory = current.as_path().parent().unwrap().to_path_buf();
+        Filesystem { current, directory }
     }
 
     pub fn prev(&mut self) {
@@ -17,6 +25,6 @@ impl Filesystem {
     }
 
     pub fn data(&self) -> image::Image {
-        todo!()
+        format::load_image(&self.current)
     }
 }
