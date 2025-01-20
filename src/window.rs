@@ -1,6 +1,7 @@
 use miniquad::{
-    window, Bindings, BufferLayout, BufferSource, BufferType, BufferUsage, EventHandler, GlContext, KeyCode, Pipeline,
-    PipelineParams, RenderingBackend, ShaderSource, TextureParams, UniformsSource, VertexAttribute, VertexFormat,
+    window, Bindings, BufferLayout, BufferSource, BufferType, BufferUsage, EventHandler, GlContext, KeyCode, KeyMods,
+    PassAction, Pipeline, PipelineParams, RenderingBackend, ShaderSource, TextureParams, UniformsSource,
+    VertexAttribute, VertexFormat,
 };
 
 use crate::config::Config;
@@ -118,7 +119,7 @@ impl EventHandler for Window {
         self.ctx.commit_frame();
     }
 
-    fn key_down_event(&mut self, keycode: miniquad::KeyCode, _keymods: miniquad::KeyMods, _repeat: bool) {
+    fn key_down_event(&mut self, keycode: KeyCode, _keymods: KeyMods, _repeat: bool) {
         match keycode {
             KeyCode::Escape => window::quit(),
             KeyCode::Delete => println!("todo: Delete"),
