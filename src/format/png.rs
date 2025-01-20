@@ -1,7 +1,7 @@
 use png::Decoder;
 
 use super::Loader;
-use crate::image::Image;
+use crate::image::{ColorType, Image};
 
 pub struct Png;
 
@@ -12,7 +12,12 @@ impl Loader for Png {
         let mut reader = decoder.read_info().unwrap();
         let mut pixels = vec![0; reader.output_buffer_size()];
         let info = reader.next_frame(&mut pixels).unwrap();
-        // buf.shrink_to(info.buffer_size());
+
+        let color_type = match info.color_type {
+            png::ColorType::Rgb => ColorType::RGB,
+            png::ColorType::Rgba => ColorType::RGBA,
+            other => panic!("Color type {other:?} not supported!"),
+        };
 
         Image {
             data: pixels,
@@ -20,7 +25,7 @@ impl Loader for Png {
             height: info.height,
             // TODO: normal cast
             depth: info.bit_depth as u8,
-            color_type: info.color_type as u8,
+            color_type,
         }
     }
 }

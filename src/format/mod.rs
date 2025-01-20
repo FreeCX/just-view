@@ -8,7 +8,7 @@ mod jpg;
 #[cfg(feature = "png")]
 mod png;
 
-use crate::image::Image;
+use crate::image::{ColorType, Image};
 
 #[allow(unused)]
 trait Loader {
@@ -31,10 +31,15 @@ pub fn load_image<P: AsRef<Path>>(filename: P) -> Image {
 
 impl From<&Image> for TextureParams {
     fn from(image: &Image) -> Self {
+        // TODO: пока без depth
+        let format = match image.color_type {
+            ColorType::RGB => miniquad::TextureFormat::RGB8,
+            ColorType::RGBA => miniquad::TextureFormat::RGBA8,
+        };
+
         TextureParams {
             kind: miniquad::TextureKind::Texture2D,
-            // TODO
-            format: miniquad::TextureFormat::RGB8,
+            format,
             wrap: miniquad::TextureWrap::Clamp,
             min_filter: miniquad::FilterMode::Nearest,
             mag_filter: miniquad::FilterMode::Nearest,

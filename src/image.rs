@@ -3,5 +3,10 @@ pub struct Image {
     pub width: u32,
     pub height: u32,
     pub depth: u8,
-    pub color_type: u8,
+    pub color_type: ColorType,
+}
+
+pub enum ColorType {
+    RGB,
+    RGBA,
 }

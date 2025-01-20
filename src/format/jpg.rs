@@ -1,7 +1,7 @@
 use zune_jpeg::JpegDecoder;
 
 use super::Loader;
-use crate::image::Image;
+use crate::image::{ColorType, Image};
 
 pub struct Jpg;
 
@@ -18,7 +18,7 @@ impl Loader for Jpg {
             height: info.height as u32,
             // TODO
             depth: info.components,
-            color_type: 0,
+            color_type: ColorType::RGB,
         }
     }
 }
