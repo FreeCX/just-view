@@ -120,8 +120,16 @@ impl EventHandler for Window {
                 }
                 println!("Zoom out to {}", self.config.zoom);
             }
-            KeyCode::Left => println!("todo: ←"),
-            KeyCode::Right => println!("todo: →"),
+            KeyCode::Left => {
+                println!("← Previous image");
+                self.config.filesystem.prev();
+                self.texture_from_image();
+            }
+            KeyCode::Right => {
+                println!("→ Next image");
+                self.config.filesystem.next();
+                self.texture_from_image();
+            }
             KeyCode::F => self.trigger_fullscreen(),
             KeyCode::I => println!("todo: i"),
             KeyCode::R => {
