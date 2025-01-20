@@ -104,7 +104,10 @@ impl EventHandler for Window {
             (1.0, 1.0)
         };
 
-        self.ctx.begin_default_pass(Default::default());
+        self.ctx.begin_pass(
+            None,
+            PassAction::Clear { color: Some(self.config.background.unpack()), depth: None, stencil: None },
+        );
 
         self.ctx.apply_pipeline(&self.pipeline);
         self.ctx.apply_bindings(&self.bindings);
