@@ -16,7 +16,17 @@ trait Loader {
     fn load(data: &[u8]) -> Image;
 }
 
-pub fn load_image<P: AsRef<Path>>(filename: P) -> Image {
+pub fn is_image<P>(filename: &P) -> bool
+where
+    P: AsRef<Path>,
+{
+    mime_guess::MimeGuess::from_path(&filename).first().unwrap().type_() == mime::IMAGE
+}
+
+pub fn load_image<P>(filename: P) -> Image
+where
+    P: AsRef<Path>,
+{
     let mime_type = mime_guess::MimeGuess::from_path(&filename).first().unwrap();
     debug!("Guessed type: {mime_type}");
     let data = fs::read(filename).unwrap();

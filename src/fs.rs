@@ -23,9 +23,11 @@ impl Filesystem {
         let mut files = Vec::new();
         for entry in fs::read_dir(directory).unwrap() {
             if let Ok(item) = entry {
-                // TODO: надо добавлять в список только валидные изображения
                 if item.metadata().unwrap().is_file() {
-                    files.push(item.path());
+                    let filename = item.path();
+                    if format::is_image(&filename) {
+                        files.push(filename);
+                    }
                 }
             }
         }
