@@ -14,7 +14,7 @@ pub struct Filesystem {
 
 impl Filesystem {
     pub fn setup(filename: &str) -> Filesystem {
-        let current: PathBuf = filename.into();
+        let current = PathBuf::from(filename).as_path().canonicalize().unwrap().to_path_buf();
         debug!("Startup file: {}", current.display());
 
         let directory = current.as_path().canonicalize().unwrap().parent().unwrap().to_path_buf();
