@@ -3,27 +3,23 @@ use miniquad::{
     PipelineParams, RenderingBackend, ShaderSource, TextureParams, UniformsSource, VertexAttribute, VertexFormat,
 };
 
+use crate::config::{Config, Size};
 use crate::shader;
 use crate::vertex::{Vec2, Vertex};
-use crate::{
-    config::{Config, Size},
-    image::Image,
-};
 
 pub struct Window {
     ctx: Box<GlContext>,
     pipeline: Pipeline,
     bindings: Bindings,
 
-    image: Image,
+    image: Option<Size>,
     config: Config,
 }
 
 impl Window {
-    pub fn new(config: Config) -> Window {
+    pub fn setup(config: Config) -> Window {
         let mut ctx = Box::new(GlContext::new());
 
-        // TODO: сохранять пропорции изображения
         #[rustfmt::skip]
         let vertices: [Vertex; 4] = [
             Vertex { pos : Vec2 { x: -1.0, y: -1.0 }, uv: Vec2 { x: 0.0, y: 1.0 } },
@@ -38,11 +34,7 @@ impl Window {
         let index_buffer =
             ctx.new_buffer(BufferType::IndexBuffer, BufferUsage::Immutable, BufferSource::slice(&indices));
 
-        let image = config.filesystem.data();
-        let params = TextureParams::from(&image);
-        let texture = ctx.new_texture_from_data_and_format(&image.data, params);
-
-        let bindings = Bindings { vertex_buffers: vec![vertex_buffer], index_buffer, images: vec![texture] };
+        let bindings = Bindings { vertex_buffers: vec![vertex_buffer], index_buffer, images: vec![] };
 
         let shader = ctx
             .new_shader(ShaderSource::Glsl { vertex: shader::VERTEX, fragment: shader::FRAGMENT }, shader::meta())
@@ -58,7 +50,7 @@ impl Window {
             PipelineParams::default(),
         );
 
-        Window { ctx, pipeline, bindings, image, config }
+        Window { ctx, pipeline, bindings, config, image: None }
     }
 
     fn trigger_fullscreen(&mut self) {
@@ -77,10 +69,23 @@ impl Window {
             window::set_window_size(w, h);
         }
     }
+
+    fn texture_from_image(&mut self) {
+        let image = self.config.filesystem.data();
+        let params = TextureParams::from(&image);
+        let texture = self.ctx.new_texture_from_data_and_format(&image.data, params);
+        self.image = Some(Size { w: image.width, h: image.height });
+        self.bindings.images = vec![texture];
+    }
 }
 
 impl EventHandler for Window {
     fn update(&mut self) {
+        // начальная загрузка изображения
+        if self.image.is_none() {
+            self.texture_from_image();
+        }
+
         // TODO: тут надо в кэш подгрузить пару картинок
     }
 
@@ -89,15 +94,20 @@ impl EventHandler for Window {
 
         // TODO: для картинок меньше размера окна нужно оставлять без масштабирования
         // вписывание изображение в окно текущего размера
-        let aspect = (w / self.image.width as f32).min(h / self.image.height as f32);
-        let ix = self.config.zoom * (self.image.width as f32 * aspect) / w;
-        let iy = self.config.zoom * (self.image.height as f32 * aspect) / h;
+        let aspect = if let Some(img) = &self.image {
+            let aspect = (w / img.w as f32).min(h / img.h as f32);
+            let ix = self.config.zoom * (img.w as f32 * aspect) / w;
+            let iy = self.config.zoom * (img.h as f32 * aspect) / h;
+            (ix, iy)
+        } else {
+            (1.0, 1.0)
+        };
 
         self.ctx.begin_default_pass(Default::default());
 
         self.ctx.apply_pipeline(&self.pipeline);
         self.ctx.apply_bindings(&self.bindings);
-        self.ctx.apply_uniforms(UniformsSource::table(&shader::Uniforms { aspect: (ix, iy) }));
+        self.ctx.apply_uniforms(UniformsSource::table(&shader::Uniforms { aspect }));
         self.ctx.draw(0, 6, 1);
         self.ctx.end_render_pass();
 

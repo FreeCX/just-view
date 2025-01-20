@@ -30,5 +30,5 @@ fn main() {
         ..Default::default()
     };
 
-    miniquad::start(window, || Box::new(Window::new(config)));
+    miniquad::start(window, || Box::new(Window::setup(config)));
 }
