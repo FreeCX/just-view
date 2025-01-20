@@ -10,3 +10,9 @@ pub enum ColorType {
     RGB,
     RGBA,
 }
+
+#[derive(Default)]
+pub struct Size {
+    pub w: u32,
+    pub h: u32,
+}

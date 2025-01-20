@@ -1,5 +1,6 @@
 use miniquad::conf::Conf;
 
+mod color;
 mod config;
 mod format;
 mod fs;
@@ -8,7 +9,8 @@ mod shader;
 mod vertex;
 mod window;
 
-use crate::config::{Color, Config};
+use crate::color::Color;
+use crate::config::Config;
 use crate::fs::Filesystem;
 use crate::window::Window;
 

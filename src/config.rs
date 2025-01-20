@@ -1,18 +1,6 @@
+use crate::color::Color;
 use crate::fs::Filesystem;
-
-#[derive(Default)]
-pub struct Size {
-    pub w: u32,
-    pub h: u32,
-}
-
-#[derive(Default)]
-pub struct Color {
-    pub r: f32,
-    pub g: f32,
-    pub b: f32,
-    pub a: f32,
-}
+use crate::image::Size;
 
 #[derive(Default)]
 pub struct Config {
@@ -21,12 +9,6 @@ pub struct Config {
     pub last_size: Size,
     pub background: Color,
     pub filesystem: Filesystem,
-}
-
-impl Color {
-    pub fn black() -> Color {
-        Color { r: 0.0, g: 0.0, b: 0.0, a: 1.0 }
-    }
 }
 
 impl Config {

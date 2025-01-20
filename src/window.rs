@@ -3,7 +3,8 @@ use miniquad::{
     PipelineParams, RenderingBackend, ShaderSource, TextureParams, UniformsSource, VertexAttribute, VertexFormat,
 };
 
-use crate::config::{Config, Size};
+use crate::config::Config;
+use crate::image::Size;
 use crate::shader;
 use crate::vertex::{Vec2, Vertex};
 
