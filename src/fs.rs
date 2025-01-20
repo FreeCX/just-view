@@ -1,6 +1,8 @@
 use std::fs;
 use std::path::PathBuf;
 
+use log::debug;
+
 use crate::format;
 use crate::image;
 
@@ -13,10 +15,10 @@ pub struct Filesystem {
 impl Filesystem {
     pub fn setup(filename: &str) -> Filesystem {
         let current: PathBuf = filename.into();
-        println!("Startup file: {}", current.display());
+        debug!("Startup file: {}", current.display());
 
         let directory = current.as_path().canonicalize().unwrap().parent().unwrap().to_path_buf();
-        println!("Working directory: {}", directory.display());
+        debug!("Working directory: {}", directory.display());
 
         let mut files = Vec::new();
         for entry in fs::read_dir(directory).unwrap() {
@@ -29,7 +31,7 @@ impl Filesystem {
         }
 
         let index = files.iter().position(|i| i == &current).unwrap();
-        println!("Current index = {index}");
+        debug!("Current index = {index}");
 
         Filesystem { files, index }
     }
@@ -37,20 +39,20 @@ impl Filesystem {
     pub fn prev(&mut self) {
         if self.index != 0 {
             self.index -= 1;
-            println!("Current index = {}", self.index);
+            debug!("Current index = {}", self.index);
         }
     }
 
     pub fn next(&mut self) {
         if self.index + 1 < self.files.len() {
             self.index += 1;
-            println!("Current index = {}", self.index);
+            debug!("Current index = {}", self.index);
         }
     }
 
     pub fn data(&self) -> image::Image {
         let filename = &self.files[self.index];
-        println!("Load file: {}", filename.display());
+        debug!("Load file: {}", filename.display());
         format::load_image(filename)
     }
 }

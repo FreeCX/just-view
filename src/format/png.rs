@@ -1,3 +1,4 @@
+use log::debug;
 use png::Decoder;
 
 use super::Loader;
@@ -7,7 +8,7 @@ pub struct Png;
 
 impl Loader for Png {
     fn load(data: &[u8]) -> Image {
-        println!("Use png loader");
+        debug!("Use png loader");
         let decoder = Decoder::new(data);
         let mut reader = decoder.read_info().unwrap();
         let mut pixels = vec![0; reader.output_buffer_size()];

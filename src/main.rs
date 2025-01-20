@@ -1,4 +1,5 @@
 use miniquad::conf::Conf;
+use simple_logger::SimpleLogger;
 
 mod color;
 mod config;
@@ -15,6 +16,8 @@ use crate::fs::Filesystem;
 use crate::window::Window;
 
 fn main() {
+    SimpleLogger::new().with_level(log::LevelFilter::Debug).init().unwrap();
+
     let filename: Option<String> = std::env::args().skip(1).take(1).next();
 
     let fs = match filename {

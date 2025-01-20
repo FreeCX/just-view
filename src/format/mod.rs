@@ -1,5 +1,6 @@
 use std::{fs, path::Path};
 
+use log::debug;
 use mime_guess::mime;
 use miniquad::TextureParams;
 
@@ -17,7 +18,7 @@ trait Loader {
 
 pub fn load_image<P: AsRef<Path>>(filename: P) -> Image {
     let mime_type = mime_guess::MimeGuess::from_path(&filename).first().unwrap();
-    println!("Guessed type: {}", mime_type);
+    debug!("Guessed type: {mime_type}");
     let data = fs::read(filename).unwrap();
 
     return match mime_type.subtype() {

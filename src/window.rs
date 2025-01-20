@@ -1,3 +1,4 @@
+use log::debug;
 use miniquad::{
     window, Bindings, BufferLayout, BufferSource, BufferType, BufferUsage, EventHandler, GlContext, KeyCode, KeyMods,
     PassAction, Pipeline, PipelineParams, RenderingBackend, ShaderSource, TextureParams, UniformsSource,
@@ -58,7 +59,7 @@ impl Window {
     fn trigger_fullscreen(&mut self) {
         if !self.config.fullscreen {
             let (w, h) = window::screen_size();
-            println!("Save current window size: {w}x{h}");
+            debug!("Save current window size: {w}x{h}");
             self.config.last_size = Size { w: w as u32, h: h as u32 };
         }
 
@@ -67,7 +68,7 @@ impl Window {
 
         if !self.config.fullscreen {
             let (w, h) = (self.config.last_size.w, self.config.last_size.h);
-            println!("Restore last window size: {w}x{h}");
+            debug!("Restore last window size: {w}x{h}");
             window::set_window_size(w, h);
         }
     }
@@ -122,34 +123,34 @@ impl EventHandler for Window {
     fn key_down_event(&mut self, keycode: KeyCode, _keymods: KeyMods, _repeat: bool) {
         match keycode {
             KeyCode::Escape => window::quit(),
-            KeyCode::Delete => println!("todo: Delete"),
+            KeyCode::Delete => debug!("todo: Delete"),
             KeyCode::Equal => {
                 if self.config.zoom < 4096.0 {
                     self.config.zoom *= 2.0;
                 }
-                println!("Zoom in to {}", self.config.zoom);
+                debug!("Zoom in to {}", self.config.zoom);
             }
             KeyCode::Minus => {
                 if self.config.zoom > 1.0 / 1024.0 {
                     self.config.zoom *= 0.5;
                 }
-                println!("Zoom out to {}", self.config.zoom);
+                debug!("Zoom out to {}", self.config.zoom);
             }
             KeyCode::Left => {
-                println!("← Previous image");
+                debug!("← Previous image");
                 self.config.filesystem.prev();
                 self.texture_from_image();
             }
             KeyCode::Right => {
-                println!("→ Next image");
+                debug!("→ Next image");
                 self.config.filesystem.next();
                 self.texture_from_image();
             }
             KeyCode::F => self.trigger_fullscreen(),
-            KeyCode::I => println!("todo: i"),
+            KeyCode::I => debug!("todo: i"),
             KeyCode::R => {
                 self.config.zoom = 1.0;
-                println!("Zoom to default {}", self.config.zoom);
+                debug!("Zoom to default {}", self.config.zoom);
             }
             _ => (),
         };
