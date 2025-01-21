@@ -6,6 +6,8 @@ use miniquad::TextureParams;
 
 #[cfg(feature = "jpg")]
 mod jpg;
+#[cfg(feature = "pcx")]
+mod pcx;
 #[cfg(feature = "png")]
 mod png;
 
@@ -38,6 +40,8 @@ where
         "image/png" => png::Png::load(&data),
         #[cfg(feature = "jpg")]
         "image/jpeg" => jpg::Jpg::load(&data),
+        #[cfg(feature = "pcx")]
+        "image/vnd.zbrush.pcx" => pcx::Pcx::load(&data),
         other => panic!("file format {other} not supported"),
     };
 }
