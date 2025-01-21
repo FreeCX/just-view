@@ -4,6 +4,8 @@ use log::debug;
 use magic::cookie::{Cookie, Load};
 use miniquad::TextureParams;
 
+#[cfg(feature = "bmp")]
+mod bmp;
 #[cfg(feature = "jpg")]
 mod jpg;
 #[cfg(feature = "pcx")]
@@ -38,12 +40,14 @@ where
     debug!("Detect type: {}", type_info);
 
     return match type_info.as_str() {
-        #[cfg(feature = "png")]
-        "image/png" => png::Png::load(&data),
+        #[cfg(feature = "bmp")]
+        "image/bmp" => bmp::Bmp::load(&data),
         #[cfg(feature = "jpg")]
         "image/jpeg" => jpg::Jpg::load(&data),
         #[cfg(feature = "pcx")]
         "image/vnd.zbrush.pcx" => pcx::Pcx::load(&data),
+        #[cfg(feature = "png")]
+        "image/png" => png::Png::load(&data),
         #[cfg(feature = "webp")]
         "image/webp" => webp::Webp::load(&data),
         other => panic!("file format {other} not supported"),
