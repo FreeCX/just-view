@@ -2,18 +2,22 @@ use std::fs;
 use std::path::PathBuf;
 
 use log::debug;
+use magic::cookie::{Cookie, Flags, Load};
 
 use crate::format;
 use crate::image;
 
-#[derive(Default)]
 pub struct Filesystem {
     files: Vec<PathBuf>,
+    cookie: Cookie<Load>,
     index: usize,
 }
 
 impl Filesystem {
     pub fn setup(filename: &str) -> Filesystem {
+        debug!("Load magic");
+        let cookie = Cookie::open(Flags::MIME_TYPE).unwrap().load(&Default::default()).unwrap();
+
         let current = PathBuf::from(filename).as_path().canonicalize().unwrap().to_path_buf();
         debug!("Startup file: {}", current.display());
 
@@ -25,7 +29,7 @@ impl Filesystem {
             if let Ok(item) = entry {
                 if item.metadata().unwrap().is_file() {
                     let filename = item.path();
-                    if format::is_image(&filename) {
+                    if format::is_image(&cookie, &filename) {
                         files.push(filename);
                     }
                 }
@@ -35,7 +39,7 @@ impl Filesystem {
         let index = files.iter().position(|i| i == &current).unwrap();
         debug!("Current index = {index}");
 
-        Filesystem { files, index }
+        Filesystem { files, index, cookie }
     }
 
     pub fn prev(&mut self) {
@@ -55,6 +59,6 @@ impl Filesystem {
     pub fn data(&self) -> image::Image {
         let filename = &self.files[self.index];
         debug!("Load file: {}", filename.display());
-        format::load_image(filename)
+        format::load_image(&self.cookie, filename)
     }
 }

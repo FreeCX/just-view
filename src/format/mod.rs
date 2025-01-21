@@ -1,7 +1,7 @@
 use std::{fs, path::Path};
 
 use log::debug;
-use mime_guess::mime;
+use magic::cookie::{Cookie, Load};
 use miniquad::TextureParams;
 
 #[cfg(feature = "jpg")]
@@ -16,27 +16,29 @@ trait Loader {
     fn load(data: &[u8]) -> Image;
 }
 
-pub fn is_image<P>(filename: &P) -> bool
+pub fn is_image<P>(cookie: &Cookie<Load>, filename: &P) -> bool
 where
     P: AsRef<Path>,
 {
-    mime_guess::MimeGuess::from_path(&filename).first().unwrap().type_() == mime::IMAGE
+    cookie.file(filename).unwrap().starts_with("image")
 }
 
-pub fn load_image<P>(filename: P) -> Image
+pub fn load_image<P>(cookie: &Cookie<Load>, filename: P) -> Image
 where
     P: AsRef<Path>,
 {
-    let mime_type = mime_guess::MimeGuess::from_path(&filename).first().unwrap();
-    debug!("Guessed type: {mime_type}");
     let data = fs::read(filename).unwrap();
+    debug!("Load file data");
 
-    return match mime_type.subtype() {
+    let type_info = cookie.buffer(&data).unwrap();
+    debug!("Detect type: {}", type_info);
+
+    return match type_info.as_str() {
         #[cfg(feature = "png")]
-        mime::PNG => png::Png::load(&data),
+        "image/png" => png::Png::load(&data),
         #[cfg(feature = "jpg")]
-        mime::JPEG => jpg::Jpg::load(&data),
-        mime => panic!("file format {mime} not supported"),
+        "image/jpeg" => jpg::Jpg::load(&data),
+        other => panic!("file format {other} not supported"),
     };
 }
 

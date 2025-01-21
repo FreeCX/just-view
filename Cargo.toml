@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 log = "0.4.25"
-mime_guess = "2.0.5"
+magic = "0.16.2"
 miniquad = "0.4.7"
 png = {version = "0.17.16", optional = true}
 simple_logger = { version = "5.0.0", default-features = false, features = [] }
