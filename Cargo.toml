@@ -7,13 +7,17 @@ edition = "2021"
 log = "0.4.25"
 magic = "0.16.2"
 miniquad = "0.4.7"
-pcx = {version = "0.2.4", optional = true}
-png = {version = "0.17.16", optional = true}
 simple_logger = { version = "5.0.0", default-features = false, features = [] }
+
+# file formats
+png = {version = "0.17.16", optional = true}
 zune-jpeg = {version = "0.4.14", optional = true}
+pcx = {version = "0.2.4", optional = true}
+image-webp = {version = "0.2.1", optional = true}
 
 [features]
-default = ["png", "jpg", "pcx"]
+default = ["png", "jpg", "pcx", "webp"]
 png = ["dep:png"]
 jpg = ["dep:zune-jpeg"]
 pcx = ["dep:pcx"]
+webp = ["dep:image-webp"]

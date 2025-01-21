@@ -10,6 +10,8 @@ mod jpg;
 mod pcx;
 #[cfg(feature = "png")]
 mod png;
+#[cfg(feature = "webp")]
+mod webp;
 
 use crate::image::{ColorType, Image};
 
@@ -42,6 +44,8 @@ where
         "image/jpeg" => jpg::Jpg::load(&data),
         #[cfg(feature = "pcx")]
         "image/vnd.zbrush.pcx" => pcx::Pcx::load(&data),
+        #[cfg(feature = "webp")]
+        "image/webp" => webp::Webp::load(&data),
         other => panic!("file format {other} not supported"),
     };
 }
