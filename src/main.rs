@@ -28,7 +28,7 @@ fn main() {
     let config = Config::new(false, Color::black(), fs);
 
     let window = Conf {
-        window_title: String::from("Just Viewer"),
+        window_title: String::from("Just View"),
         window_width: 500,
         window_height: 500,
         window_resizable: true,
