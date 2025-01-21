@@ -52,7 +52,7 @@ impl From<&Image> for TextureParams {
             kind: miniquad::TextureKind::Texture2D,
             format,
             wrap: miniquad::TextureWrap::Clamp,
-            min_filter: miniquad::FilterMode::Nearest,
+            min_filter: miniquad::FilterMode::Linear,
             mag_filter: miniquad::FilterMode::Nearest,
             mipmap_filter: miniquad::MipmapFilterMode::None,
             width: image.width,
