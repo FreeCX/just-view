@@ -113,7 +113,7 @@ impl EventHandler for Window {
 
         self.ctx.apply_pipeline(&self.pipeline);
         self.ctx.apply_bindings(&self.bindings);
-        self.ctx.apply_uniforms(UniformsSource::table(&shader::Uniforms { aspect }));
+        self.ctx.apply_uniforms(UniformsSource::table(&shader::Uniforms { aspect, offset: (0.0, 0.0) }));
         self.ctx.draw(0, 6, 1);
         self.ctx.end_render_pass();
 
