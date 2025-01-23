@@ -1,4 +1,5 @@
 use log::debug;
+use zune_core::result::DecodingResult;
 use zune_ppm::PPMDecoder;
 
 use super::Loader;
@@ -12,16 +13,13 @@ impl Loader for Ppm {
         let mut decoder = PPMDecoder::new(data);
         decoder.decode_headers().unwrap();
         let (width, height) = decoder.get_dimensions().unwrap();
-        // TODO
-        let pixels = decoder.decode().unwrap().u8().unwrap();
+        let (pixels, color_type) = match decoder.decode().unwrap() {
+            DecodingResult::U8(data) => (data, ColorType::RGB8),
+            DecodingResult::U16(_) => panic!("format u16 not supported"),
+            DecodingResult::F32(_) => panic!("format f32 not supported"),
+            _ => panic!("incorret image"),
+        };
 
-        Image {
-            data: pixels,
-            width: width as u32,
-            height: height as u32,
-            // TODO
-            depth: 8,
-            color_type: ColorType::RGB,
-        }
+        Image { data: pixels, width: width as u32, height: height as u32, color_type }
     }
 }

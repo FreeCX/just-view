@@ -15,18 +15,12 @@ impl Loader for Png {
         let info = reader.next_frame(&mut pixels).unwrap();
 
         let color_type = match info.color_type {
-            png::ColorType::Rgb => ColorType::RGB,
-            png::ColorType::Rgba => ColorType::RGBA,
+            png::ColorType::Rgb => ColorType::RGB8,
+            png::ColorType::Rgba => ColorType::RGBA8,
+            // TODO
             other => panic!("Color type {other:?} not supported!"),
         };
 
-        Image {
-            data: pixels,
-            width: info.width,
-            height: info.height,
-            // TODO: normal cast
-            depth: info.bit_depth as u8,
-            color_type,
-        }
+        Image { data: pixels, width: info.width, height: info.height, color_type }
     }
 }

@@ -17,16 +17,8 @@ impl Loader for Webp {
         let (width, height) = decoder.dimensions();
         let mut pixels = vec![0; decoder.output_buffer_size().unwrap()];
         decoder.read_image(&mut pixels).unwrap();
+        let color_type = if decoder.has_alpha() { ColorType::RGBA8 } else { ColorType::RGB8 };
 
-        let color_type = if decoder.has_alpha() { ColorType::RGBA } else { ColorType::RGB };
-
-        Image {
-            data: pixels,
-            width,
-            height,
-            // TODO
-            depth: 8,
-            color_type,
-        }
+        Image { data: pixels, width, height, color_type }
     }
 }

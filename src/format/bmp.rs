@@ -18,8 +18,8 @@ impl Loader for Bmp {
         decoder.decode_into(&mut pixels).unwrap();
 
         // TODO
-        let color_type = if colorspace.has_alpha() { ColorType::RGBA } else { ColorType::RGB };
+        let color_type = if colorspace.has_alpha() { ColorType::RGBA8 } else { ColorType::RGB8 };
 
-        Image { data: pixels, width: width as u32, height: height as u32, depth: 8, color_type }
+        Image { data: pixels, width: width as u32, height: height as u32, color_type }
     }
 }

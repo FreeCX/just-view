@@ -19,8 +19,7 @@ impl Loader for Pcx {
             width: decoder.width() as u32,
             height: decoder.height() as u32,
             // TODO
-            depth: 8,
-            color_type: ColorType::RGB,
+            color_type: ColorType::RGB8,
         }
     }
 }

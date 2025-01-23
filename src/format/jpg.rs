@@ -18,8 +18,7 @@ impl Loader for Jpg {
             width: info.width as u32,
             height: info.height as u32,
             // TODO
-            depth: info.components,
-            color_type: ColorType::RGB,
+            color_type: ColorType::RGB8,
         }
     }
 }

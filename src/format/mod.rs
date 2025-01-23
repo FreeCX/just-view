@@ -62,8 +62,8 @@ impl From<&Image> for TextureParams {
     fn from(image: &Image) -> Self {
         // TODO: пока без depth
         let format = match image.color_type {
-            ColorType::RGB => miniquad::TextureFormat::RGB8,
-            ColorType::RGBA => miniquad::TextureFormat::RGBA8,
+            ColorType::RGB8 => miniquad::TextureFormat::RGB8,
+            ColorType::RGBA8 => miniquad::TextureFormat::RGBA8,
         };
 
         TextureParams {
