@@ -12,6 +12,8 @@ mod jpg;
 mod pcx;
 #[cfg(feature = "png")]
 mod png;
+#[cfg(feature = "ppm")]
+mod ppm;
 #[cfg(feature = "webp")]
 mod webp;
 
@@ -48,6 +50,8 @@ where
         "image/vnd.zbrush.pcx" => pcx::Pcx::load(&data),
         #[cfg(feature = "png")]
         "image/png" => png::Png::load(&data),
+        #[cfg(feature = "ppm")]
+        "image/x-portable-pixmap" => ppm::Ppm::load(&data),
         #[cfg(feature = "webp")]
         "image/webp" => webp::Webp::load(&data),
         other => panic!("file format {other} not supported"),
