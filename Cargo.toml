@@ -4,18 +4,18 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-log = "0.4.25"
+log = { version = "0.4.25", default-features = false, features = [] }
 magic = "0.16.2"
 miniquad = "0.4.7"
 simple_logger = { version = "5.0.0", default-features = false, features = [] }
 
 # file formats
 png = {version = "0.17.16", optional = true}
-zune-jpeg = {version = "0.4.14", optional = true}
+zune-jpeg = {version = "0.4.14", optional = true, default-features = false, features = []}
 pcx = {version = "0.2.4", optional = true}
 image-webp = {version = "0.2.1", optional = true}
-zune-bmp = {version = "0.4.0", optional = true}
-zune-ppm = {version = "0.4.0", optional = true}
+zune-bmp = {version = "0.4.0", optional = true, default-features = false, features = []}
+zune-ppm = {version = "0.4.0", optional = true, default-features = false, features = []}
 zune-core = {version = "0.4.12", optional = true}
 
 [features]
@@ -26,3 +26,14 @@ pcx = ["dep:pcx"]
 webp = ["dep:image-webp"]
 bmp = ["dep:zune-bmp"]
 ppm = ["dep:zune-ppm", "dep:zune-core"]
+
+[profile.release]
+lto = true
+panic = 'abort'
+opt-level = "s"
+overflow-checks = false
+debug-assertions = false
+incremental = false
+rpath = false
+codegen-units = 1
+strip = true
