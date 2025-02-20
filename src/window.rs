@@ -7,6 +7,7 @@ use miniquad::{
 
 use crate::config::Config;
 use crate::image::Size;
+use crate::scale::Scale;
 use crate::shader;
 use crate::vertex::{Vec2, Vertex};
 
@@ -17,6 +18,7 @@ pub struct Window {
 
     image: Option<Size>,
     config: Config,
+    scale: Scale,
 }
 
 impl Window {
@@ -53,7 +55,7 @@ impl Window {
             PipelineParams::default(),
         );
 
-        Window { ctx, pipeline, bindings, config, image: None }
+        Window { ctx, pipeline, bindings, config, image: None, scale: Scale::new() }
     }
 
     fn trigger_fullscreen(&mut self) {
@@ -94,14 +96,8 @@ impl EventHandler for Window {
 
     fn draw(&mut self) {
         let (w, h) = window::screen_size();
-
-        // TODO: для картинок меньше размера окна нужно оставлять без масштабирования
-        // вписывание изображение в окно текущего размера
         let aspect = if let Some(img) = &self.image {
-            let aspect = (w / img.w as f32).min(h / img.h as f32);
-            let ix = self.config.zoom * (img.w as f32 * aspect) / w;
-            let iy = self.config.zoom * (img.h as f32 * aspect) / h;
-            (ix, iy)
+            self.scale.calc_aspect(img.w as f32, img.h as f32, w, h)
         } else {
             (1.0, 1.0)
         };
@@ -125,16 +121,12 @@ impl EventHandler for Window {
             KeyCode::Escape => window::quit(),
             KeyCode::Delete => debug!("todo: Delete"),
             KeyCode::Equal => {
-                if self.config.zoom < 4096.0 {
-                    self.config.zoom *= 2.0;
-                }
-                debug!("Zoom in to {}", self.config.zoom);
+                self.scale.zoom_in();
+                debug!("Zoom in: {:.0} %", self.scale.zoom);
             }
             KeyCode::Minus => {
-                if self.config.zoom > 1.0 / 1024.0 {
-                    self.config.zoom *= 0.5;
-                }
-                debug!("Zoom out to {}", self.config.zoom);
+                self.scale.zoom_out();
+                debug!("Zoom out: {:.0} %", self.scale.zoom);
             }
             KeyCode::Left => {
                 debug!("← Previous image");
@@ -149,8 +141,8 @@ impl EventHandler for Window {
             KeyCode::F => self.trigger_fullscreen(),
             KeyCode::I => debug!("todo: i"),
             KeyCode::R => {
-                self.config.zoom = 1.0;
-                debug!("Zoom to default {}", self.config.zoom);
+                self.scale.zoom_reset();
+                debug!("Zoom reset: {:.0} %", self.scale.zoom);
             }
             _ => (),
         };

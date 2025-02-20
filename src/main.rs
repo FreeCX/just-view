@@ -6,6 +6,7 @@ mod config;
 mod format;
 mod fs;
 mod image;
+mod scale;
 mod shader;
 mod vertex;
 mod window;
