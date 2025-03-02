@@ -1,8 +1,8 @@
 use log::debug;
 use miniquad::{
-    window, Bindings, BufferLayout, BufferSource, BufferType, BufferUsage, EventHandler, GlContext, KeyCode, KeyMods,
+    Bindings, BufferLayout, BufferSource, BufferType, BufferUsage, EventHandler, GlContext, KeyCode, KeyMods,
     PassAction, Pipeline, PipelineParams, RenderingBackend, ShaderSource, TextureParams, UniformsSource,
-    VertexAttribute, VertexFormat,
+    VertexAttribute, VertexFormat, window,
 };
 
 use crate::config::Config;
