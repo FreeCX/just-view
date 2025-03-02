@@ -11,6 +11,8 @@ pub struct Filesystem {
     files: Vec<PathBuf>,
     cookie: Cookie<Load>,
     index: usize,
+    // TODO: на сколько влево и право нужно кэшировать?
+    cache: Vec<Option<image::Image>>,
 }
 
 impl Filesystem {
@@ -39,7 +41,9 @@ impl Filesystem {
         let index = files.iter().position(|i| i == &current).unwrap();
         debug!("Current index = {index}");
 
-        Filesystem { files, index, cookie }
+        let count = files.len();
+
+        Filesystem { files, index, cookie, cache: vec![None; count] }
     }
 
     pub fn first(&mut self) -> bool {
@@ -82,9 +86,29 @@ impl Filesystem {
         }
     }
 
-    pub fn data(&self) -> image::Image {
-        let filename = &self.files[self.index];
+    fn load(&self, filename: &PathBuf) -> image::Image {
         debug!("Load file: {}", filename.display());
         format::load_image(&self.cookie, filename)
+    }
+
+    pub fn data(&mut self) -> image::Image {
+        if self.cache[self.index].is_none() {
+            debug!("Cache miss...");
+            let filename = &self.files[self.index];
+            self.cache[self.index] = Some(self.load(filename));
+        }
+        self.cache[self.index].clone().unwrap()
+    }
+
+    pub fn cache(&mut self) {
+        if self.index > 0 && self.cache[self.index - 1].is_none() {
+            debug!("Preload left");
+            let filename = &self.files[self.index - 1];
+            self.cache[self.index - 1] = Some(self.load(filename));
+        } else if self.index + 1 < self.files.len() && self.cache[self.index + 1].is_none() {
+            debug!("Preload right");
+            let filename = &self.files[self.index + 1];
+            self.cache[self.index + 1] = Some(self.load(filename));
+        }
     }
 }

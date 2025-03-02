@@ -78,20 +78,20 @@ impl Window {
     fn texture_from_image(&mut self) {
         let image = self.config.filesystem.data();
         let params = TextureParams::from(&image);
-        let texture = self.ctx.new_texture_from_data_and_format(&image.data, params);
+        self.bindings.images = vec![self.ctx.new_texture_from_data_and_format(&image.data, params)];
         self.image = Some(Size { w: image.width, h: image.height });
-        self.bindings.images = vec![texture];
     }
 }
 
 impl EventHandler for Window {
     fn update(&mut self) {
+        // простое кэширование
+        self.config.filesystem.cache();
+
         // начальная загрузка изображения
         if self.image.is_none() {
             self.texture_from_image();
         }
-
-        // TODO: тут надо в кэш подгрузить пару картинок
     }
 
     fn draw(&mut self) {

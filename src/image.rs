@@ -1,3 +1,4 @@
+#[derive(Clone)]
 pub struct Image {
     pub data: Vec<u8>,
     pub width: u32,
@@ -5,6 +6,7 @@ pub struct Image {
     pub color_type: ColorType,
 }
 
+#[derive(Clone)]
 pub enum ColorType {
     RGB8,
     RGBA8,
