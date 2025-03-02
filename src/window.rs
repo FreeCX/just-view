@@ -122,11 +122,11 @@ impl EventHandler for Window {
             KeyCode::Delete => debug!("todo: Delete"),
             KeyCode::Equal => {
                 self.scale.zoom_in();
-                debug!("Zoom in: {:.0} %", self.scale.zoom);
+                debug!("Zoom in: {:.0} %", self.scale.zoom());
             }
             KeyCode::Minus => {
                 self.scale.zoom_out();
-                debug!("Zoom out: {:.0} %", self.scale.zoom);
+                debug!("Zoom out: {:.0} %", self.scale.zoom());
             }
             KeyCode::Left => {
                 debug!("← Previous image");
@@ -142,7 +142,7 @@ impl EventHandler for Window {
             KeyCode::I => debug!("todo: i"),
             KeyCode::R => {
                 self.scale.zoom_reset();
-                debug!("Zoom reset: {:.0} %", self.scale.zoom);
+                debug!("Zoom reset: {:.0} %", self.scale.zoom());
             }
             _ => (),
         };
