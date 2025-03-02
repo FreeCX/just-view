@@ -1,4 +1,4 @@
-const ZOOM: [u32; 18] = [1, 2, 5, 10, 20, 40, 60, 80, 100, 125, 150, 200, 300, 500, 1000, 3000, 5000, 10000];
+const ZOOM: [u16; 18] = [1, 2, 5, 10, 20, 40, 60, 80, 100, 125, 150, 200, 300, 500, 1000, 3000, 5000, 10000];
 const DEFAULT: usize = 8;
 
 pub struct Scale {
@@ -11,7 +11,7 @@ impl Scale {
         Scale { aspect: 1.0, zoom_index: DEFAULT }
     }
 
-    pub fn zoom(&self) -> u32 {
+    pub fn zoom(&self) -> u16 {
         ZOOM[self.zoom_index]
     }
 
