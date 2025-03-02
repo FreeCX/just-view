@@ -128,15 +128,29 @@ impl EventHandler for Window {
                 self.scale.zoom_out();
                 debug!("Zoom out: {:.0} %", self.scale.zoom());
             }
+            KeyCode::Up => {
+                if self.config.filesystem.first() {
+                    debug!("↑ First image");
+                    self.texture_from_image();
+                }
+            }
+            KeyCode::Down => {
+                if self.config.filesystem.last() {
+                    debug!("↓ Last image");
+                    self.texture_from_image();
+                }
+            }
             KeyCode::Left => {
-                debug!("← Previous image");
-                self.config.filesystem.prev();
-                self.texture_from_image();
+                if self.config.filesystem.prev() {
+                    debug!("← Previous image");
+                    self.texture_from_image();
+                }
             }
             KeyCode::Right => {
-                debug!("→ Next image");
-                self.config.filesystem.next();
-                self.texture_from_image();
+                if self.config.filesystem.next() {
+                    debug!("→ Next image");
+                    self.texture_from_image();
+                }
             }
             KeyCode::F => self.trigger_fullscreen(),
             KeyCode::I => debug!("todo: i"),

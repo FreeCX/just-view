@@ -42,17 +42,43 @@ impl Filesystem {
         Filesystem { files, index, cookie }
     }
 
-    pub fn prev(&mut self) {
+    pub fn first(&mut self) -> bool {
         if self.index != 0 {
-            self.index -= 1;
+            self.index = 0;
             debug!("Current index = {}", self.index);
+            true
+        } else {
+            false
         }
     }
 
-    pub fn next(&mut self) {
+    pub fn last(&mut self) -> bool {
+        if self.index != self.files.len() - 1 {
+            self.index = self.files.len() - 1;
+            debug!("Current index = {}", self.index);
+            true
+        } else {
+            false
+        }
+    }
+
+    pub fn prev(&mut self) -> bool {
+        if self.index != 0 {
+            self.index -= 1;
+            debug!("Current index = {}", self.index);
+            true
+        } else {
+            false
+        }
+    }
+
+    pub fn next(&mut self) -> bool {
         if self.index + 1 < self.files.len() {
             self.index += 1;
             debug!("Current index = {}", self.index);
+            true
+        } else {
+            false
         }
     }
 
