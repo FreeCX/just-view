@@ -2,7 +2,10 @@ use log::debug;
 use png::{Decoder, Transformations};
 
 use super::Loader;
-use crate::image::{ColorType, Image};
+use crate::{
+    image::{ColorType, Image},
+    transform::grayscale_to_rgb,
+};
 
 pub struct Png;
 
@@ -20,7 +23,11 @@ impl Loader for Png {
         debug!("Color_type = {:?}", info.color_type);
         let color_type = match info.color_type {
             Rgba | GrayscaleAlpha => ColorType::RGBA8,
-            Grayscale | Rgb | Indexed => ColorType::RGB8,
+            Rgb | Indexed => ColorType::RGB8,
+            Grayscale => {
+                pixels = grayscale_to_rgb(pixels);
+                ColorType::RGB8
+            }
         };
 
         Image { data: pixels, width: info.width, height: info.height, color_type }

@@ -8,6 +8,7 @@ mod fs;
 mod image;
 mod scale;
 mod shader;
+mod transform;
 mod vertex;
 mod window;
 
