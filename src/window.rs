@@ -84,6 +84,10 @@ impl Window {
             self.image = Some(Size { w: image.width, h: image.height });
         }
     }
+
+    fn inverse_background(&mut self) {
+        self.config.background.inverse();
+    }
 }
 
 impl EventHandler for Window {
@@ -158,6 +162,7 @@ impl EventHandler for Window {
             }
             KeyCode::F => self.trigger_fullscreen(),
             KeyCode::I => debug!("todo: i"),
+            KeyCode::B => self.inverse_background(),
             KeyCode::R => {
                 self.scale.zoom_reset();
                 debug!("Zoom reset: {:.0} %", self.scale.zoom());

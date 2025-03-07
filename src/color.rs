@@ -14,4 +14,10 @@ impl Color {
     pub fn unpack(&self) -> (f32, f32, f32, f32) {
         (self.r, self.g, self.b, self.a)
     }
+
+    pub fn inverse(&mut self) {
+        self.r = (self.r - 1.0).abs();
+        self.g = (self.g - 1.0).abs();
+        self.b = (self.b - 1.0).abs();
+    }
 }
