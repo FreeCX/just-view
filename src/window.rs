@@ -85,12 +85,12 @@ impl Window {
 
 impl EventHandler for Window {
     fn update(&mut self) {
-        // простое кэширование
-        self.config.filesystem.cache();
-
         // начальная загрузка изображения
         if self.image.is_none() {
             self.texture_from_image();
+        } else {
+            // простое кэширование
+            self.config.filesystem.cache();
         }
     }
 
