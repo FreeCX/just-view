@@ -12,11 +12,12 @@ impl Loader for Png {
 
         debug!("Use png loader");
         let mut decoder = Decoder::new(data);
-        decoder.set_transformations(Transformations::EXPAND);
+        decoder.set_transformations(Transformations::normalize_to_color8());
         let mut reader = decoder.read_info().unwrap();
         let mut pixels = vec![0; reader.output_buffer_size()];
         let info = reader.next_frame(&mut pixels).unwrap();
 
+        debug!("Color_type = {:?}", info.color_type);
         let color_type = match info.color_type {
             Rgba | GrayscaleAlpha => ColorType::RGBA8,
             Grayscale | Rgb | Indexed => ColorType::RGB8,

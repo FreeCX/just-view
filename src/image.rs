@@ -6,7 +6,7 @@ pub struct Image {
     pub color_type: ColorType,
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Eq)]
 pub enum ColorType {
     RGB8,
     RGBA8,

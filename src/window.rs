@@ -44,7 +44,6 @@ impl Window {
         let shader = ctx
             .new_shader(ShaderSource::Glsl { vertex: shader::VERTEX, fragment: shader::FRAGMENT }, shader::meta())
             .unwrap();
-
         let pipeline = ctx.new_pipeline(
             &[BufferLayout::default()],
             &[
@@ -55,7 +54,10 @@ impl Window {
             PipelineParams::default(),
         );
 
-        Window { ctx, pipeline, bindings, config, image: None, scale: Scale::new() }
+        let mut window = Window { ctx, pipeline, bindings, config, image: None, scale: Scale::new() };
+        window.texture_from_image();
+
+        window
     }
 
     fn trigger_fullscreen(&mut self) {
@@ -76,22 +78,19 @@ impl Window {
     }
 
     fn texture_from_image(&mut self) {
-        let image = self.config.filesystem.data();
-        let params = TextureParams::from(&image);
-        self.bindings.images = vec![self.ctx.new_texture_from_data_and_format(&image.data, params)];
-        self.image = Some(Size { w: image.width, h: image.height });
+        if let Some(image) = self.config.filesystem.data() {
+            let params = TextureParams::from(&image);
+            self.bindings.images = vec![self.ctx.new_texture_from_data_and_format(&image.data, params)];
+            self.image = Some(Size { w: image.width, h: image.height });
+        }
     }
 }
 
 impl EventHandler for Window {
     fn update(&mut self) {
-        // начальная загрузка изображения
-        if self.image.is_none() {
-            self.texture_from_image();
-        } else {
-            // простое кэширование
-            self.config.filesystem.cache();
-        }
+        // TODO: нужно подумать как и когда кэшировать изображения
+        // простое кэширование
+        self.config.filesystem.cache();
     }
 
     fn draw(&mut self) {
@@ -106,6 +105,11 @@ impl EventHandler for Window {
             None,
             PassAction::Clear { color: Some(self.config.background.unpack()), depth: None, stencil: None },
         );
+
+        if self.image.is_none() {
+            // TODO: сообщение о том что нечего показывать
+            return;
+        }
 
         self.ctx.apply_pipeline(&self.pipeline);
         self.ctx.apply_bindings(&self.bindings);

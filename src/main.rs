@@ -23,7 +23,7 @@ fn main() {
 
     let fs = match filename {
         Some(file) => Filesystem::setup(&file),
-        None => panic!("Nothing to do"),
+        None => Filesystem::default(),
     };
 
     let config = Config::new(false, Color::black(), fs);

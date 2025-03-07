@@ -7,20 +7,20 @@ pub const VERTEX: &str = r#"#version 100
     uniform vec2 aspect;
     uniform vec2 offset;
 
-    varying lowp vec2 texcoord;
+    varying lowp vec2 uv;
 
     void main() {
         gl_Position = vec4(in_pos * aspect + offset, 0, 1);
-        texcoord = in_uv;
+        uv = in_uv;
     }"#;
 
 pub const FRAGMENT: &str = r#"#version 100
-    varying lowp vec2 texcoord;
+    varying lowp vec2 uv;
 
     uniform sampler2D tex;
 
     void main() {
-        gl_FragColor = texture2D(tex, texcoord);
+        gl_FragColor = texture2D(tex, uv);
     }"#;
 
 pub fn meta() -> ShaderMeta {

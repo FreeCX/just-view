@@ -16,9 +16,15 @@ pub struct Filesystem {
 }
 
 impl Filesystem {
-    pub fn setup(filename: &str) -> Filesystem {
+    pub fn default() -> Filesystem {
         debug!("Load magic");
         let cookie = Cookie::open(Flags::MIME_TYPE).unwrap().load(&Default::default()).unwrap();
+
+        Filesystem { files: vec![], index: 0, cookie, cache: vec![None; 0] }
+    }
+
+    pub fn setup(filename: &str) -> Filesystem {
+        let default = Filesystem::default();
 
         let current = PathBuf::from(filename).as_path().canonicalize().unwrap().to_path_buf();
         debug!("Startup file: {}", current.display());
@@ -31,7 +37,7 @@ impl Filesystem {
             if let Ok(item) = entry {
                 if item.metadata().unwrap().is_file() {
                     let filename = item.path();
-                    if format::is_image(&cookie, &filename) {
+                    if format::is_image(&default.cookie, &filename) {
                         files.push(filename);
                     }
                 }
@@ -43,7 +49,7 @@ impl Filesystem {
 
         let count = files.len();
 
-        Filesystem { files, index, cookie, cache: vec![None; count] }
+        Filesystem { files, index, cookie: default.cookie, cache: vec![None; count] }
     }
 
     pub fn first(&mut self) -> bool {
@@ -91,13 +97,17 @@ impl Filesystem {
         format::load_image(&self.cookie, filename)
     }
 
-    pub fn data(&mut self) -> image::Image {
+    pub fn data(&mut self) -> Option<image::Image> {
+        if self.cache.len() == 0 {
+            return None;
+        }
+
         if self.cache[self.index].is_none() {
             debug!("Cache miss...");
             let filename = &self.files[self.index];
             self.cache[self.index] = Some(self.load(filename));
         }
-        self.cache[self.index].clone().unwrap()
+        self.cache[self.index].clone()
     }
 
     pub fn cache(&mut self) {

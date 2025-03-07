@@ -76,7 +76,7 @@ impl From<&Image> for TextureParams {
             width: image.width,
             height: image.height,
             allocate_mipmaps: false,
-            sample_count: 0,
+            sample_count: 1,
         }
     }
 }
