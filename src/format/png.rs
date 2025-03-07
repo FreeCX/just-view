@@ -1,5 +1,5 @@
 use log::debug;
-use png::Decoder;
+use png::{Decoder, Transformations};
 
 use super::Loader;
 use crate::image::{ColorType, Image};
@@ -8,17 +8,18 @@ pub struct Png;
 
 impl Loader for Png {
     fn load(data: &[u8]) -> Image {
+        use png::ColorType::*;
+
         debug!("Use png loader");
-        let decoder = Decoder::new(data);
+        let mut decoder = Decoder::new(data);
+        decoder.set_transformations(Transformations::EXPAND);
         let mut reader = decoder.read_info().unwrap();
         let mut pixels = vec![0; reader.output_buffer_size()];
         let info = reader.next_frame(&mut pixels).unwrap();
 
         let color_type = match info.color_type {
-            png::ColorType::Rgb => ColorType::RGB8,
-            png::ColorType::Rgba => ColorType::RGBA8,
-            // TODO
-            other => panic!("Color type {other:?} not supported!"),
+            Rgba | GrayscaleAlpha => ColorType::RGBA8,
+            Grayscale | Rgb | Indexed => ColorType::RGB8,
         };
 
         Image { data: pixels, width: info.width, height: info.height, color_type }
