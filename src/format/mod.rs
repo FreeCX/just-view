@@ -19,6 +19,21 @@ mod webp;
 
 use crate::image::{ColorType, Image};
 
+const SUPPORTED_FORMATS: &[(&str, fn(&[u8]) -> Image)] = &[
+    #[cfg(feature = "bmp")]
+    ("image/bmp", bmp::Bmp::load),
+    #[cfg(feature = "jpg")]
+    ("image/jpeg", jpg::Jpg::load),
+    #[cfg(feature = "pcx")]
+    ("image/vnd.zbrush.pcx", pcx::Pcx::load),
+    #[cfg(feature = "png")]
+    ("image/png", png::Png::load),
+    #[cfg(feature = "ppm")]
+    ("image/x-portable-pixmap", ppm::Ppm::load),
+    #[cfg(feature = "webp")]
+    ("image/webp", webp::Webp::load),
+];
+
 #[allow(unused)]
 trait Loader {
     fn load(data: &[u8]) -> Image;
@@ -28,7 +43,7 @@ pub fn is_image<P>(cookie: &Cookie<Load>, filename: &P) -> bool
 where
     P: AsRef<Path>,
 {
-    cookie.file(filename).unwrap().starts_with("image")
+    SUPPORTED_FORMATS.iter().map(|i| i.0).any(|i| i == cookie.file(filename).unwrap())
 }
 
 pub fn load_image<P>(cookie: &Cookie<Load>, filename: P) -> Image
@@ -41,21 +56,8 @@ where
     let type_info = cookie.buffer(&data).unwrap();
     debug!("Detect type: {}", type_info);
 
-    return match type_info.as_str() {
-        #[cfg(feature = "bmp")]
-        "image/bmp" => bmp::Bmp::load(&data),
-        #[cfg(feature = "jpg")]
-        "image/jpeg" => jpg::Jpg::load(&data),
-        #[cfg(feature = "pcx")]
-        "image/vnd.zbrush.pcx" => pcx::Pcx::load(&data),
-        #[cfg(feature = "png")]
-        "image/png" => png::Png::load(&data),
-        #[cfg(feature = "ppm")]
-        "image/x-portable-pixmap" => ppm::Ppm::load(&data),
-        #[cfg(feature = "webp")]
-        "image/webp" => webp::Webp::load(&data),
-        other => panic!("file format {other} not supported"),
-    };
+    let func = SUPPORTED_FORMATS.iter().find(|i| i.0 == type_info).unwrap().1;
+    return func(&data);
 }
 
 impl From<&Image> for TextureParams {
