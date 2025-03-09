@@ -14,6 +14,8 @@ mod pcx;
 mod png;
 #[cfg(feature = "ppm")]
 mod ppm;
+#[cfg(feature = "tga")]
+mod tga;
 #[cfg(feature = "webp")]
 mod webp;
 
@@ -30,6 +32,8 @@ const SUPPORTED_FORMATS: &[(&str, fn(&[u8]) -> Image)] = &[
     ("image/png", png::Png::load),
     #[cfg(feature = "ppm")]
     ("image/x-portable-pixmap", ppm::Ppm::load),
+    #[cfg(feature = "tga")]
+    ("image/x-tga", tga::Tga::load),
     #[cfg(feature = "webp")]
     ("image/webp", webp::Webp::load),
 ];
