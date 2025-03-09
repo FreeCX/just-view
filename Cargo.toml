@@ -17,17 +17,19 @@ image-webp = {version = "0.2.1", optional = true}
 zune-bmp = {version = "0.4.0", optional = true, default-features = false, features = []}
 zune-ppm = {version = "0.4.0", optional = true, default-features = false, features = []}
 zune-core = {version = "0.4.12", optional = true}
-tinytga = { version="0.5.0", optional = true }
+tinytga = { version = "0.5.0", optional = true }
+gif = { version = "0.13.1", optional = true }
 
 [features]
-default = ["png", "jpg", "pcx", "webp", "bmp", "tga", "ppm"]
-png = ["dep:png"]
+default = ["bmp", "gif", "jpg", "pcx", "png", "ppm", "tga", "webp"]
+bmp = ["dep:zune-bmp"]
+gif = ["dep:gif"]
 jpg = ["dep:zune-jpeg"]
 pcx = ["dep:pcx"]
-webp = ["dep:image-webp"]
-bmp = ["dep:zune-bmp"]
-tga = ["dep:tinytga"]
+png = ["dep:png"]
 ppm = ["dep:zune-ppm", "dep:zune-core"]
+tga = ["dep:tinytga"]
+webp = ["dep:image-webp"]
 
 [profile.release]
 lto = true

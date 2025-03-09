@@ -6,6 +6,8 @@ use miniquad::TextureParams;
 
 #[cfg(feature = "bmp")]
 mod bmp;
+#[cfg(feature = "gif")]
+mod gif;
 #[cfg(feature = "jpg")]
 mod jpg;
 #[cfg(feature = "pcx")]
@@ -24,6 +26,8 @@ use crate::image::{ColorType, Image};
 const SUPPORTED_FORMATS: &[(&str, fn(&[u8]) -> Image)] = &[
     #[cfg(feature = "bmp")]
     ("image/bmp", bmp::Bmp::load),
+    #[cfg(feature = "gif")]
+    ("image/gif", gif::Gif::load),
     #[cfg(feature = "jpg")]
     ("image/jpeg", jpg::Jpg::load),
     #[cfg(feature = "pcx")]
