@@ -8,6 +8,8 @@ use miniquad::TextureParams;
 mod bmp;
 #[cfg(feature = "gif")]
 mod gif;
+#[cfg(feature = "heic")]
+mod heic;
 #[cfg(feature = "jpg")]
 mod jpg;
 #[cfg(feature = "pcx")]
@@ -28,6 +30,8 @@ const SUPPORTED_FORMATS: &[(&str, fn(&[u8]) -> Image)] = &[
     ("image/bmp", bmp::Bmp::load),
     #[cfg(feature = "gif")]
     ("image/gif", gif::Gif::load),
+    #[cfg(feature = "heic")]
+    ("image/heic", heic::Heic::load),
     #[cfg(feature = "jpg")]
     ("image/jpeg", jpg::Jpg::load),
     #[cfg(feature = "pcx")]
