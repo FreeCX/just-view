@@ -94,7 +94,8 @@ impl Filesystem {
 
     fn load(&self, filename: &PathBuf) -> image::Image {
         debug!("Load file: {}", filename.display());
-        format::load_image(&self.cookie, filename)
+        // TODO
+        format::load_image(&self.cookie, filename).unwrap()
     }
 
     pub fn data(&mut self) -> Option<image::Image> {

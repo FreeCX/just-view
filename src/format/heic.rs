@@ -1,3 +1,4 @@
+use anyhow::Context;
 use libheif_rs::{ColorSpace, HeifContext, LibHeif, RgbChroma};
 use log::debug;
 
@@ -7,15 +8,15 @@ use crate::image::{ColorType, Image};
 pub struct Heic;
 
 impl Loader for Heic {
-    fn load(data: &[u8]) -> Image {
+    fn load(data: &[u8]) -> anyhow::Result<Image> {
         debug!("Use heic loader");
 
         let lib = LibHeif::new();
-        let ctx = HeifContext::read_from_bytes(data).unwrap();
-        let handle = ctx.primary_image_handle().unwrap();
-        let planes = lib.decode(&handle, ColorSpace::Rgb(RgbChroma::Rgb), None).unwrap();
-        let pixels = planes.planes().interleaved.unwrap().data.to_vec();
+        let ctx = HeifContext::read_from_bytes(data)?;
+        let handle = ctx.primary_image_handle()?;
+        let planes = lib.decode(&handle, ColorSpace::Rgb(RgbChroma::Rgb), None)?;
+        let pixels = planes.planes().interleaved.with_context(|| format!("Missing interleaved plane"))?.data.to_vec();
 
-        Image { data: pixels, width: handle.width(), height: handle.height(), color_type: ColorType::RGB8 }
+        Ok(Image { data: pixels, width: handle.width(), height: handle.height(), color_type: ColorType::RGB8 })
     }
 }

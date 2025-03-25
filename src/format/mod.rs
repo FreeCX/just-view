@@ -25,7 +25,7 @@ mod webp;
 
 use crate::image::{ColorType, Image};
 
-const SUPPORTED_FORMATS: &[(&str, fn(&[u8]) -> Image)] = &[
+const SUPPORTED_FORMATS: &[(&str, fn(&[u8]) -> anyhow::Result<Image>)] = &[
     #[cfg(feature = "bmp")]
     ("image/bmp", bmp::Bmp::load),
     #[cfg(feature = "gif")]
@@ -48,7 +48,7 @@ const SUPPORTED_FORMATS: &[(&str, fn(&[u8]) -> Image)] = &[
 
 #[allow(unused)]
 trait Loader {
-    fn load(data: &[u8]) -> Image;
+    fn load(data: &[u8]) -> anyhow::Result<Image>;
 }
 
 pub fn is_image<P>(cookie: &Cookie<Load>, filename: &P) -> bool
@@ -58,14 +58,14 @@ where
     SUPPORTED_FORMATS.iter().map(|i| i.0).any(|i| i == cookie.file(filename).unwrap())
 }
 
-pub fn load_image<P>(cookie: &Cookie<Load>, filename: P) -> Image
+pub fn load_image<P>(cookie: &Cookie<Load>, filename: P) -> anyhow::Result<Image>
 where
     P: AsRef<Path>,
 {
-    let data = fs::read(filename).unwrap();
+    let data = fs::read(filename)?;
     debug!("Load file data");
 
-    let type_info = cookie.buffer(&data).unwrap();
+    let type_info = cookie.buffer(&data)?;
     debug!("Detect type: {}", type_info);
 
     let func = SUPPORTED_FORMATS.iter().find(|i| i.0 == type_info).unwrap().1;

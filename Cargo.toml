@@ -8,6 +8,7 @@ log = { version = "0.4.25", default-features = false, features = [] }
 magic = "0.16.2"
 miniquad = "0.4.7"
 simple_logger = { version = "5.0.0", default-features = false, features = [] }
+anyhow = "1.0.97"
 
 # file formats
 png = {version = "0.17.16", optional = true}

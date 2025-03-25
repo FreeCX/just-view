@@ -1,3 +1,4 @@
+use anyhow::{Context, anyhow, bail};
 use log::debug;
 use zune_core::result::DecodingResult;
 use zune_ppm::PPMDecoder;
@@ -8,7 +9,7 @@ use crate::image::{ColorType, Image};
 pub struct Ppm;
 
 impl Loader for Ppm {
-    fn load(data: &[u8]) -> Image {
+    fn load(data: &[u8]) -> anyhow::Result<Image> {
         debug!("Use ppm loader");
 
         // zune_ppm doesn't support P3 format
@@ -17,34 +18,41 @@ impl Loader for Ppm {
         }
 
         let mut decoder = PPMDecoder::new(data);
-        decoder.decode_headers().unwrap();
-        let (width, height) = decoder.get_dimensions().unwrap();
-        let (pixels, color_type) = match decoder.decode().unwrap() {
+        if let Err(e) = decoder.decode_headers() {
+            return Err(anyhow!("{:?}", e));
+        }
+        let (width, height) = decoder.get_dimensions().with_context(|| "Cannot get dimensions")?;
+
+        let result = match decoder.decode() {
+            Ok(data) => data,
+            Err(e) => return Err(anyhow!("{:?}", e)),
+        };
+        let (pixels, color_type) = match result {
             DecodingResult::U8(data) => (data, ColorType::RGB8),
-            DecodingResult::U16(_) => panic!("format u16 not supported"),
-            DecodingResult::F32(_) => panic!("format f32 not supported"),
-            _ => panic!("incorrect image"),
+            DecodingResult::U16(_) => bail!("format u16 not supported"),
+            DecodingResult::F32(_) => bail!("format f32 not supported"),
+            _ => bail!("incorrect image"),
         };
 
-        Image { data: pixels, width: width as u32, height: height as u32, color_type }
+        Ok(Image { data: pixels, width: width as u32, height: height as u32, color_type })
     }
 }
 
 impl Ppm {
     // TODO: improve parsing
-    fn decode_p3(data: &[u8]) -> Image {
+    fn decode_p3(data: &[u8]) -> anyhow::Result<Image> {
         let to_int =
             |data: &[u8]| -> usize { data.iter().map(|&i| i as usize - '0' as usize).fold(0, |acc, x| acc * 10 + x) };
         let mut iterator = data.split(|&item| item == ' ' as u8 || item == '\n' as u8);
 
-        let header = iterator.next().unwrap();
+        let header = iterator.next().with_context(|| "Cannot parse header")?;
         assert_eq!(header, b"P3");
 
-        let width = to_int(iterator.next().unwrap()) as u32;
-        let height = to_int(iterator.next().unwrap()) as u32;
+        let width = to_int(iterator.next().with_context(|| "Cannot parse width")?) as u32;
+        let height = to_int(iterator.next().with_context(|| "Cannot parse height")?) as u32;
 
         // TODO: use to remap data
-        let _max_value = to_int(iterator.next().unwrap()) as u32;
+        let _max_value = to_int(iterator.next().with_context(|| "Cannot parse max value")?) as u32;
 
         let mut pixels = Vec::with_capacity(3 * width as usize * height as usize);
         loop {
@@ -60,6 +68,6 @@ impl Ppm {
             pixels.extend_from_slice(&[r, g, b]);
         }
 
-        Image { data: pixels, width, height, color_type: ColorType::RGB8 }
+        Ok(Image { data: pixels, width, height, color_type: ColorType::RGB8 })
     }
 }

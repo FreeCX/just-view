@@ -1,3 +1,4 @@
+use anyhow::anyhow;
 use log::debug;
 use tinytga::RawTga;
 
@@ -7,10 +8,13 @@ use crate::image::{ColorType, Image};
 pub struct Tga;
 
 impl Loader for Tga {
-    fn load(data: &[u8]) -> Image {
+    fn load(data: &[u8]) -> anyhow::Result<Image> {
         debug!("Use tga loader");
 
-        let img = RawTga::from_slice(data).unwrap();
+        let img = match RawTga::from_slice(data) {
+            Ok(data) => data,
+            Err(e) => return Err(anyhow!("{:?}", e)),
+        };
         let header = img.header();
         let width = header.width as u32;
         let height = header.height as u32;
@@ -25,6 +29,6 @@ impl Loader for Tga {
         }
         let color_type = ColorType::RGB8;
 
-        Image { data: pixels, width, height, color_type }
+        Ok(Image { data: pixels, width, height, color_type })
     }
 }

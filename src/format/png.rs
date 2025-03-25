@@ -10,15 +10,16 @@ use crate::{
 pub struct Png;
 
 impl Loader for Png {
-    fn load(data: &[u8]) -> Image {
+    fn load(data: &[u8]) -> anyhow::Result<Image> {
         use png::ColorType::*;
 
         debug!("Use png loader");
+
         let mut decoder = Decoder::new(data);
         decoder.set_transformations(Transformations::normalize_to_color8());
-        let mut reader = decoder.read_info().unwrap();
+        let mut reader = decoder.read_info()?;
         let mut pixels = vec![0; reader.output_buffer_size()];
-        let info = reader.next_frame(&mut pixels).unwrap();
+        let info = reader.next_frame(&mut pixels)?;
 
         debug!("Color_type = {:?}", info.color_type);
         let color_type = match info.color_type {
@@ -30,6 +31,6 @@ impl Loader for Png {
             }
         };
 
-        Image { data: pixels, width: info.width, height: info.height, color_type }
+        Ok(Image { data: pixels, width: info.width, height: info.height, color_type })
     }
 }
