@@ -43,6 +43,7 @@ impl Filesystem {
                 }
             }
         }
+        files.sort();
 
         let index = files.iter().position(|i| i == &current).unwrap();
         debug!("Current index = {index}");
