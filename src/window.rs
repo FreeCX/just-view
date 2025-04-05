@@ -78,11 +78,10 @@ impl Window {
     }
 
     fn texture_from_image(&mut self) {
-        if let Some(image) = self.config.filesystem.data() {
-            let params = TextureParams::from(&image);
-            self.bindings.images = vec![self.ctx.new_texture_from_data_and_format(&image.data, params)];
-            self.image = Some(Size { w: image.width, h: image.height });
-        }
+        let image = self.config.filesystem.data();
+        let params = TextureParams::from(&image);
+        self.bindings.images = vec![self.ctx.new_texture_from_data_and_format(&image.data, params)];
+        self.image = Some(Size { w: image.width, h: image.height });
     }
 
     fn inverse_background(&mut self) {

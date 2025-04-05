@@ -95,13 +95,12 @@ impl Filesystem {
 
     fn load(&self, filename: &PathBuf) -> image::Image {
         debug!("Load file: {}", filename.display());
-        // TODO
-        format::load_image(&self.cookie, filename).unwrap()
+        format::load_image(&self.cookie, filename).unwrap_or(image::Image::empty())
     }
 
-    pub fn data(&mut self) -> Option<image::Image> {
+    pub fn data(&mut self) -> image::Image {
         if self.cache.len() == 0 {
-            return None;
+            return image::Image::empty();
         }
 
         if self.cache[self.index].is_none() {
@@ -109,7 +108,7 @@ impl Filesystem {
             let filename = &self.files[self.index];
             self.cache[self.index] = Some(self.load(filename));
         }
-        self.cache[self.index].clone()
+        self.cache[self.index].clone().unwrap()
     }
 
     pub fn cache(&mut self) {
@@ -126,11 +125,12 @@ impl Filesystem {
 
     pub fn delete(&mut self) {
         let file = self.files.remove(self.index);
-        if self.index + 1 < self.files.len() {
-            self.index += 1;
-        } else if self.index > 0 {
+        self.cache.remove(self.index);
+
+        if self.index == self.files.len() && self.index != 0 {
             self.index -= 1;
         }
+
         debug!("Delete image: {file:?}");
         let _ = trash::delete(file);
     }
