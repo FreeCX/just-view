@@ -123,4 +123,15 @@ impl Filesystem {
             self.cache[self.index + 1] = Some(self.load(filename));
         }
     }
+
+    pub fn delete(&mut self) {
+        let file = self.files.remove(self.index);
+        if self.index + 1 < self.files.len() {
+            self.index += 1;
+        } else if self.index > 0 {
+            self.index -= 1;
+        }
+        debug!("Delete image: {file:?}");
+        let _ = trash::delete(file);
+    }
 }

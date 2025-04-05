@@ -127,7 +127,10 @@ impl EventHandler for Window {
     fn key_down_event(&mut self, keycode: KeyCode, _keymods: KeyMods, _repeat: bool) {
         match keycode {
             KeyCode::Escape => window::quit(),
-            KeyCode::Delete => debug!("todo: Delete"),
+            KeyCode::Delete => {
+                self.config.filesystem.delete();
+                self.texture_from_image();
+            }
             KeyCode::Equal => {
                 self.scale.zoom_in();
                 debug!("Zoom in: {:.0} %", self.scale.zoom());
