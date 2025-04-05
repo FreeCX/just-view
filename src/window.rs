@@ -166,7 +166,7 @@ impl EventHandler for Window {
             KeyCode::F => self.trigger_fullscreen(),
             KeyCode::I => debug!("todo: i"),
             KeyCode::B => self.inverse_background(),
-            KeyCode::R => {
+            KeyCode::Key0 => {
                 self.scale.zoom_reset();
                 debug!("Zoom reset: {:.0} %", self.scale.zoom());
             }
