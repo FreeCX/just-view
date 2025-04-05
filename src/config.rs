@@ -11,6 +11,6 @@ pub struct Config {
 
 impl Config {
     pub fn new(fullscreen: bool, background: Color, filesystem: Filesystem) -> Config {
-        Config { fullscreen, background, filesystem, last_size: Size { w: 0, h: 0 } }
+        Config { fullscreen, background, filesystem, last_size: Size { w: 1000, h: 1000 } }
     }
 }

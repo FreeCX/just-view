@@ -21,19 +21,18 @@ fn main() {
     SimpleLogger::new().with_level(log::LevelFilter::Debug).init().unwrap();
 
     let filename: Option<String> = std::env::args().skip(1).take(1).next();
-
     let fs = match filename {
         Some(file) => Filesystem::setup(&file),
         None => Filesystem::default(),
     };
 
-    let config = Config::new(false, Color::black(), fs);
-
+    let config = Config::new(true, Color::black(), fs);
     let window = Conf {
         window_title: String::from("Just View"),
-        window_width: 500,
-        window_height: 500,
+        window_width: config.last_size.w as i32,
+        window_height: config.last_size.h as i32,
         window_resizable: true,
+        fullscreen: config.fullscreen,
         ..Default::default()
     };
 
